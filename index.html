@@ -189,6 +189,21 @@
       console.log(cost);
       return cost;
     }
+
+    function getNumCandidatesIncludedInSubscription() {
+      let numCandInSub;
+      let pricingModel = getPricingModel();
+
+      fetchedData.result.forEach(function (index) {
+        if (index.label === getCompetitor()) {
+          if (pricingModel === "subscription-with-usage") {
+            numCandInSub = index.parameters.numCandidatesIncludedInSubscription;
+          }
+        }
+      });
+      return numCandInSub;
+    }
+
     let equipOutputEl = document.getElementById("output-equip");
     function calculateEquipCost() {
       let noOfCandidates = getValue();
@@ -213,12 +228,33 @@
         }
       } else if (pricingModel === "pure-subscription") {
         if (getCountry() === "IN") {
-          competitorOutputEl.innerHTML = "₹" + noOfCandidates * getCost().IN;
         } else if (getCountry() === "US") {
-          let usCost = noOfCandidates * getCost().US;
-          competitorOutputEl.innerHTML = "$" + usCost.toFixed(2);
         }
       } else if (pricingModel === "subscription-with-usage") {
+        if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
+        }
+        if (getCountry() === "IN") {
+          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
+            competitorOutputEl.innerHTML = "₹" + getCost().annual.IN;
+          } else {
+            let totalCost =
+              getCost().annual.IN +
+              getCost().perCandidate.IN *
+                (noOfCandidates - getNumCandidatesIncludedInSubscription());
+            competitorOutputEl.innerHTML = "₹" + totalCost;
+          }
+        } else if (getCountry() === "US") {
+          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
+            let usCost = getCost().annual.US;
+            competitorOutputEl.innerHTML = "$" + usCost.toFixed(2);
+          } else {
+            let totalCost =
+              getCost().annual.US +
+              getCost().perCandidate.US *
+                (noOfCandidates - getNumCandidatesIncludedInSubscription());
+            competitorOutputEl.innerHTML = "$" + totalCost.toFixed(2);
+          }
+        }
       }
     }
     function onSubmit() {
