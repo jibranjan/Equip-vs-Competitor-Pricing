@@ -18,7 +18,6 @@
         return response.json();
       }).then((value) => {
         fetchedData = value;
-        console.log(value);
         addInDropdown();
       });
 
@@ -194,7 +193,18 @@
       });
       return pricingModel;
     }
+    // forequip
+    function getCostEquip() {
+      let cost;
+      fetchedData.result.forEach(function (index) {
+        if (index.label === "equip") {
+          cost = index.parameters.costPerCandidate;
+        }
+      });
+      return cost;
+    }
 
+    // for competitors:
     function getCost() {
       let cost;
       let pricingModel = getPricingModel();
@@ -237,9 +247,9 @@
     function calculateEquipCost() {
       let noOfCandidates = getValue();
       if (getCountry() === "IN") {
-        equipOutputEl.innerHTML = "₹" + noOfCandidates * 82;
+        equipOutputEl.innerHTML = "₹" + noOfCandidates * getCostEquip().IN;
       } else if (getCountry() === "US") {
-        equipOutputEl.innerHTML = "$" + noOfCandidates;
+        equipOutputEl.innerHTML = "$" + noOfCandidates * getCostEquip().US;
       }
     }
 
