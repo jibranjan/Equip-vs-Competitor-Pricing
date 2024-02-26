@@ -32,6 +32,7 @@
           let option = document.createElement("option");
           option.value = index.label;
           option.textContent = index.name;
+          option.classList.add("competitor-option");
           dropdownEl.appendChild(option);
         });
       }
@@ -39,9 +40,34 @@
     <div
       class="flex flex-col gap-10 text-xl rounded-md border-2 border-blue-900 max-w-xl mx-auto mt-40 p-2"
     >
-      <div>
-        <span>Competitor:</span>
-        <select name="Competitors" id="competitors"></select>
+      <div class="flex gap-10">
+        <div>
+          <span>Competitor:</span>
+          <select name="Competitors" id="competitors">
+            <option>Select Competitor</option>
+            <!-- hardcoded for TestGorilla -->
+            <option value="testgorilla" class="competitor-option">
+              TestGorilla
+            </option>
+          </select>
+        </div>
+        <div id="testgorilla-team-size-container" class="hidden">
+          <span>Team Size:</span>
+          <select id="team-size">
+            <!-- <option value="AMOUNT CHARGED BY TEST GORILLA IN INR">"SIZE OF TEAM"</option> -->
+
+            <option value="67500">1 - 15</option>
+            <option value="108000">16 - 30</option>
+            <option value="187500">31 - 50</option>
+            <option value="360000">51 - 100</option>
+            <option value="630000" selected>101 - 200</option>
+            <option value="1012500">201 - 300</option>
+            <option value="1572000">301 - 400</option>
+            <option value="2250000">401 - 500</option>
+            <option value="3150000">501 - 750</option>
+            <option value="3600000">751 - 1000</option>
+          </select>
+        </div>
       </div>
       <div>
         <span>Country:</span>
@@ -140,6 +166,7 @@
     }
 
     let competitorsEl = document.getElementById("competitors");
+
     function getCompetitor() {
       let selectedIndex = competitorsEl.selectedIndex;
       let selectedCompetitor = competitorsEl.options[selectedIndex];
@@ -212,8 +239,7 @@
       if (getCountry() === "IN") {
         equipOutputEl.innerHTML = "₹" + noOfCandidates * 82;
       } else if (getCountry() === "US") {
-        let usCost = noOfCandidates * 0.99;
-        equipOutputEl.innerHTML = "$" + usCost.toFixed(2);
+        equipOutputEl.innerHTML = "$" + noOfCandidates;
       }
     }
 
@@ -225,8 +251,7 @@
         if (getCountry() === "IN") {
           competitorOutputEl.innerHTML = "₹" + noOfCandidates * getCost().IN;
         } else if (getCountry() === "US") {
-          let usCost = noOfCandidates * getCost().US;
-          competitorOutputEl.innerHTML = "$" + usCost.toFixed(2);
+          competitorOutputEl.innerHTML = "$" + noOfCandidates * getCost().US;
         }
       } else if (pricingModel === "pure-subscription") {
         if (getCountry() === "IN") {
@@ -242,15 +267,14 @@
           }
         } else if (getCountry() === "US") {
           if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-            let usCost = getCost().US;
-            competitorOutputEl.innerHTML = "$" + usCost.toFixed(2);
+            competitorOutputEl.innerHTML = "$" + getCost().US;
           } else {
             let totalCost =
               getCost().US *
               Math.ceil(
                 noOfCandidates / getNumCandidatesIncludedInSubscription()
               );
-            competitorOutputEl.innerHTML = "$" + totalCost.toFixed(2);
+            competitorOutputEl.innerHTML = "$" + totalCost;
           }
         }
       } else if (pricingModel === "subscription-with-usage") {
@@ -266,24 +290,53 @@
           }
         } else if (getCountry() === "US") {
           if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-            let usCost = getCost().annual.US;
-            competitorOutputEl.innerHTML = "$" + usCost.toFixed(2);
+            competitorOutputEl.innerHTML = "$" + getCost().annual.US;
           } else {
             let totalCost =
               getCost().annual.US +
               getCost().perCandidate.US *
                 (noOfCandidates - getNumCandidatesIncludedInSubscription());
-            competitorOutputEl.innerHTML = "$" + totalCost.toFixed(2);
+            competitorOutputEl.innerHTML = "$" + totalCost;
           }
         }
       }
     }
-    // function calculateTestGorillaCost(){
-    //
-    // }
+
+    function calculateTestGorillaCost() {
+      let noOfCandidates = getValue();
+      let priceForTeamSize = document.getElementById("team-size").value;
+      if (getCountry() === "IN") {
+        competitorOutputEl.innerHTML = "₹" + priceForTeamSize;
+      } else if (getCountry() === "US") {
+        competitorOutputEl.innerHTML = "$" + Math.floor(priceForTeamSize / 82);
+      }
+    }
+
+    competitorsEl.addEventListener("change", function () {
+      hideTeamSize();
+    });
+
+    let testGorillaTeamSizeContainerEl = document.getElementById(
+      "testgorilla-team-size-container"
+    );
+    function hideTeamSize() {
+      fetchedData.result.forEach(function (index) {
+        if (getCompetitor() === "testgorilla") {
+          testGorillaTeamSizeContainerEl.classList.remove("hidden");
+        } else if (getCompetitor() !== "testgorilla") {
+          testGorillaTeamSizeContainerEl.classList.add("hidden");
+        }
+      });
+    }
+
     function onSubmit() {
-      calculateCompetitorCost();
+      if (getCompetitor() === "testgorilla") {
+        calculateTestGorillaCost();
+      } else {
+        calculateCompetitorCost();
+      }
       calculateEquipCost();
+      hideTeamSize();
     }
   </script>
 </html>
