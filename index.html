@@ -186,7 +186,6 @@
           }
         }
       });
-      console.log(cost);
       return cost;
     }
 
@@ -196,7 +195,10 @@
 
       fetchedData.result.forEach(function (index) {
         if (index.label === getCompetitor()) {
-          if (pricingModel === "subscription-with-usage") {
+          if (
+            pricingModel === "subscription-with-usage" ||
+            "pure-subscription"
+          ) {
             numCandInSub = index.parameters.numCandidatesIncludedInSubscription;
           }
         }
@@ -228,11 +230,30 @@
         }
       } else if (pricingModel === "pure-subscription") {
         if (getCountry() === "IN") {
+          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
+            competitorOutputEl.innerHTML = "₹" + getCost().IN;
+          } else {
+            let totalCost =
+              getCost().IN *
+              Math.ceil(
+                noOfCandidates / getNumCandidatesIncludedInSubscription()
+              );
+            competitorOutputEl.innerHTML = "₹" + totalCost;
+          }
         } else if (getCountry() === "US") {
+          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
+            let usCost = getCost().US;
+            competitorOutputEl.innerHTML = "$" + usCost.toFixed(2);
+          } else {
+            let totalCost =
+              getCost().US *
+              Math.ceil(
+                noOfCandidates / getNumCandidatesIncludedInSubscription()
+              );
+            competitorOutputEl.innerHTML = "$" + totalCost.toFixed(2);
+          }
         }
       } else if (pricingModel === "subscription-with-usage") {
-        if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-        }
         if (getCountry() === "IN") {
           if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
             competitorOutputEl.innerHTML = "₹" + getCost().annual.IN;
@@ -257,6 +278,9 @@
         }
       }
     }
+    // function calculateTestGorillaCost(){
+
+    // }
     function onSubmit() {
       calculateCompetitorCost();
       calculateEquipCost();
