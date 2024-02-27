@@ -10,21 +10,21 @@
 
   <body>
     <script>
-      var fetchedData;
+      var competitorData;
       let p = fetch(
         "https://tvw82n52.api.sanity.io/v2022-03-07/data/query/production?query=*%5B_type+%3D%3D+%22competitorPricing%22%5D"
       );
       p.then((response) => {
         return response.json();
       }).then((value) => {
-        fetchedData = value;
-        addInDropdown();
+        competitorData = value;
+        populateCompetitorDropdown();
       });
 
-      function addInDropdown() {
+      function populateCompetitorDropdown() {
         let dropdownEl = document.getElementById("competitors");
 
-        fetchedData.result.forEach(function (index) {
+        competitorData.result.forEach(function (index) {
           if (index.label === "equip") {
             return;
           }
@@ -186,7 +186,7 @@
     }
     function getPricingModel() {
       let pricingModel;
-      fetchedData.result.forEach(function (index) {
+      competitorData.result.forEach(function (index) {
         if (index.label === getCompetitor()) {
           pricingModel = index.parameters.pricingModel;
         }
@@ -196,7 +196,7 @@
     // forequip
     function getCostEquip() {
       let cost;
-      fetchedData.result.forEach(function (index) {
+      competitorData.result.forEach(function (index) {
         if (index.label === "equip") {
           cost = index.parameters.costPerCandidate;
         }
@@ -209,7 +209,7 @@
       let cost;
       let pricingModel = getPricingModel();
 
-      fetchedData.result.forEach(function (index) {
+      competitorData.result.forEach(function (index) {
         if (index.label === getCompetitor()) {
           if (pricingModel === "pure-usage") {
             cost = index.parameters.costPerCandidate;
@@ -230,7 +230,7 @@
       let numCandInSub;
       let pricingModel = getPricingModel();
 
-      fetchedData.result.forEach(function (index) {
+      competitorData.result.forEach(function (index) {
         if (index.label === getCompetitor()) {
           if (
             pricingModel === "subscription-with-usage" ||
@@ -330,7 +330,7 @@
       "testgorilla-team-size-container"
     );
     function hideTeamSize() {
-      fetchedData.result.forEach(function (index) {
+      competitorData.result.forEach(function (index) {
         if (getCompetitor() === "testgorilla") {
           testGorillaTeamSizeContainerEl.classList.remove("hidden");
         } else if (getCompetitor() !== "testgorilla") {
