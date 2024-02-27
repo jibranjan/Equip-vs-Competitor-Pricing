@@ -17,7 +17,7 @@
       p.then((response) => {
         return response.json();
       }).then((value) => {
-        competitorData = value;
+        window.competitorData = value;
         populateCompetitorDropdown();
       });
 
@@ -108,45 +108,35 @@
     </div>
   </body>
   <script>
+    window.addEventListener("load", () => {});
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const parameterValue = urlParams.get("c");
+    const competitorFromParams = urlParams.get("c");
 
-    let companyElArray = document.querySelectorAll(".company");
-
+    let companyElArray = document.querySelectorAll(".competitor-option");
     companyElArray.forEach(function (companyEl) {
       let companyElValue = companyEl.getAttribute("value");
-      if (parameterValue === companyElValue) {
+      if (competitorFromParams === companyElValue) {
         companyEl.setAttribute("selected", true);
       }
     });
 
     let countriesEl = document.getElementById("countries");
 
-    countriesEl.addEventListener("change", function () {
-      getCountry();
-    });
+    countriesEl.addEventListener("change", getCountry);
 
     candidatesInputEl = document.getElementById("no-of-candidates");
 
-    candidatesInputEl.addEventListener("keydown", function () {
-      validationOfInput(event);
-    });
-    candidatesInputEl.addEventListener("paste", function () {
-      validationOfInput(event);
-    });
+    candidatesInputEl.addEventListener("keydown", validationNumCandidates);
+    candidatesInputEl.addEventListener("paste", validationNumCandidates);
 
     let submitButtonEl = document.getElementById("submit-button");
 
-    submitButtonEl.addEventListener("click", function () {
-      // calculateCompetitorCost();
-      // calculateEquipCost();
-      onSubmit();
-    });
+    submitButtonEl.addEventListener("click", onSubmit);
 
-    function validationOfInput(event) {
+    function validationNumCandidates(event) {
       let key = event.key;
-      if (getValue() === "" && event.key === "0") {
+      if (getNumCandidates() === "" && event.key === "0") {
         event.preventDefault();
       }
       if (key === "-" || key === "+" || key === ".") {
@@ -159,6 +149,7 @@
       if (event.type === "paste") {
         let pasteData = event.clipboardData.getData("text/plain");
         if (!/^\d+$/.test(pasteData) || pasteData.startsWith("0")) {
+          alert("Invalid input for number of candidates");
           event.preventDefault();
         }
       }
@@ -180,9 +171,9 @@
       return countryValue;
     }
 
-    function getValue() {
-      let noOfCandidatesEl = document.getElementById("no-of-candidates");
-      return noOfCandidatesEl.value;
+    function getNumCandidates() {
+      let numOfCandidatesEl = document.getElementById("no-of-candidates");
+      return numOfCandidatesEl.value;
     }
     function getPricingModel() {
       let pricingModel;
@@ -194,7 +185,7 @@
       return pricingModel;
     }
     // forequip
-    function getCostEquip() {
+    function getEquipPrice() {
       let cost;
       competitorData.result.forEach(function (index) {
         if (index.label === "equip") {
@@ -205,7 +196,7 @@
     }
 
     // for competitors:
-    function getCost() {
+    function getCompetitorPrice() {
       let cost;
       let pricingModel = getPricingModel();
 
@@ -245,67 +236,69 @@
 
     let equipOutputEl = document.getElementById("output-equip");
     function calculateEquipCost() {
-      let noOfCandidates = getValue();
+      let numOfCandidates = getNumCandidates();
+      let equipPrice = getEquipPrice();
       if (getCountry() === "IN") {
-        equipOutputEl.innerHTML = "₹" + noOfCandidates * getCostEquip().IN;
+        equipOutputEl.innerHTML = "₹" + numOfCandidates * equipPrice.IN;
       } else if (getCountry() === "US") {
-        equipOutputEl.innerHTML = "$" + noOfCandidates * getCostEquip().US;
+        equipOutputEl.innerHTML = "$" + numOfCandidates * equipPrice.US;
       }
     }
 
     let competitorOutputEl = document.getElementById("output-competitor");
     function calculateCompetitorCost() {
-      let noOfCandidates = getValue();
+      let numOfCandidates = getNumCandidates();
       let pricingModel = getPricingModel();
+      let competitorPrice = getCompetitorPrice(pricingModel);
+      let numOfCandidatesIncludedInSub =
+        getNumCandidatesIncludedInSubscription(pricingModel);
       if (pricingModel === "pure-usage") {
         if (getCountry() === "IN") {
-          competitorOutputEl.innerHTML = "₹" + noOfCandidates * getCost().IN;
+          competitorOutputEl.innerHTML =
+            "₹" + numOfCandidates * competitorPrice.IN;
         } else if (getCountry() === "US") {
-          competitorOutputEl.innerHTML = "$" + noOfCandidates * getCost().US;
+          competitorOutputEl.innerHTML =
+            "$" + numOfCandidates * competitorPrice.US;
         }
       } else if (pricingModel === "pure-subscription") {
         if (getCountry() === "IN") {
-          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-            competitorOutputEl.innerHTML = "₹" + getCost().IN;
+          if (numOfCandidates <= numOfCandidatesIncludedInSub) {
+            competitorOutputEl.innerHTML = "₹" + competitorPrice.IN;
           } else {
             let totalCost =
-              getCost().IN *
-              Math.ceil(
-                noOfCandidates / getNumCandidatesIncludedInSubscription()
-              );
+              competitorPrice.IN *
+              Math.ceil(numOfCandidates / numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = "₹" + totalCost;
           }
         } else if (getCountry() === "US") {
-          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-            competitorOutputEl.innerHTML = "$" + getCost().US;
+          if (numOfCandidates <= numOfCandidatesIncludedInSub) {
+            competitorOutputEl.innerHTML = "$" + competitorPrice.US;
           } else {
             let totalCost =
-              getCost().US *
-              Math.ceil(
-                noOfCandidates / getNumCandidatesIncludedInSubscription()
-              );
+              competitorPrice.US *
+              Math.ceil(numOfCandidates / numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = "$" + totalCost;
           }
         }
       } else if (pricingModel === "subscription-with-usage") {
         if (getCountry() === "IN") {
-          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-            competitorOutputEl.innerHTML = "₹" + getCost().annual.IN;
+          if (numOfCandidates <= numOfCandidatesIncludedInSub) {
+            competitorOutputEl.innerHTML = "₹" + competitorPrice.annual.IN;
           } else {
             let totalCost =
-              getCost().annual.IN +
-              getCost().perCandidate.IN *
-                (noOfCandidates - getNumCandidatesIncludedInSubscription());
+              competitorPrice.annual.IN +
+              competitorPrice.perCandidate.IN *
+                (numOfCandidates - numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = "₹" + totalCost;
           }
         } else if (getCountry() === "US") {
-          if (noOfCandidates <= getNumCandidatesIncludedInSubscription()) {
-            competitorOutputEl.innerHTML = "$" + getCost().annual.US;
+          if (numOfCandidates <= numOfCandidatesIncludedInSub) {
+            competitorOutputEl.innerHTML = "$" + competitorPrice.annual.US;
           } else {
             let totalCost =
-              getCost().annual.US +
-              getCost().perCandidate.US *
-                (noOfCandidates - getNumCandidatesIncludedInSubscription());
+              competitorPrice.annual.US +
+              competitorPrice.perCandidate.US *
+                (numOfCandidates - numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = "$" + totalCost;
           }
         }
@@ -313,7 +306,7 @@
     }
 
     function calculateTestGorillaCost() {
-      let noOfCandidates = getValue();
+      let numOfCandidates = getNumCandidates();
       let priceForTeamSize = document.getElementById("team-size").value;
       if (getCountry() === "IN") {
         competitorOutputEl.innerHTML = "₹" + priceForTeamSize;
