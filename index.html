@@ -360,12 +360,12 @@
         </div>
       </nav>
     </header>
-    <main class="">
+    <main>
       <div
-        class="bg-blue-50 h-screen py-10 px-5 mx-auto flex flex-col justify-center items-center gap-6"
+        class="bg-blue-50 h-screen py-10 px-5 mx-auto flex flex-col justify-center items-center gap-6 md:gap-7 lg:gap-8"
       >
         <h1
-          class="text-gray-900 text-3xl md:text-4xl font-extrabold leading-9 text-center"
+          class="text-gray-900 text-3xl md:text-4xl lg:text-5xl font-extrabold leading-9 text-center"
         >
           How
           <span class="bg-emerald-200 px-1 rounded-md">TestGorilla’s</span>
@@ -391,64 +391,72 @@
       </div>
 
       <!-- hidden part: -->
-      <div class="p-5">
-        <div class="text-center mb-8">
-          <span class="text-blue-900 text-2xl md:text-3xl font-bold leading-7"
-            >Calculate what
-            <span class="text-emerald-500">TestGorilla will cost you</span>
-            based on your candidates. And compare it with what Equip will cost
-            Switched from TestGorilla to Equip</span
+      <div class="p-5 md:p-7 lg:p-9 max-w-7xl mx-auto">
+        <div class="lg:flex justify-between gap-4">
+          <div
+            class="text-center lg:text-left mb-8 lg:mb-0 lg:flex items-center lg:max-w-3xl"
           >
-        </div>
+            <span
+              class="text-blue-900 text-2xl md:text-3xl lg:text-4xl font-bold leading-7"
+              >Calculate what
+              <span class="text-emerald-500">TestGorilla will cost you</span>
+              based on your candidates. And compare it with what Equip will cost
+              Switched from TestGorilla to Equip</span
+            >
+          </div>
+          <div>
+            <!-- no of candidates input field -->
+            <div class="flex flex-col mb-5 max-lg:max-w-md max-lg:mx-auto">
+              <label
+                class="text-gray-700 text-sm font-medium leading-tight"
+                for="no-of-candidates"
+                >No. Of Candidates</label
+              >
+              <input
+                id="no-of-candidates"
+                class="rounded-md border px-3 py-2 outline-blue-700"
+                type="number"
+                autofocus
+              />
+            </div>
 
-        <!-- no of candidates input field -->
-        <div class="flex flex-col mb-5 max-md:max-w-md max-md:mx-auto">
-          <label
-            class="text-gray-700 text-sm font-medium leading-tight"
-            for="no-of-candidates"
-            >No. Of Candidates</label
-          >
-          <input
-            id="no-of-candidates"
-            class="rounded-md border px-3 py-2 outline-blue-700"
-            type="number"
-            autofocus
-          />
-        </div>
+            <!-- team size for test gorilla -->
+            <div
+              id="testgorilla-team-size-container"
+              class="hidden flex-col max-lg:max-w-md max-lg:mx-auto"
+            >
+              <span class="text-gray-700 text-sm font-medium leading-tight"
+                >Team Size</span
+              >
+              <select
+                id="team-size"
+                class="rounded-md border px-3 py-2.5 outline-blue-700"
+              >
+                <!-- <option value="AMOUNT CHARGED BY TEST GORILLA IN INR">"SIZE OF TEAM"</option> -->
 
-        <!-- team size for test gorilla -->
-        <div
-          id="testgorilla-team-size-container"
-          class="hidden flex-col max-md:max-w-md max-md:mx-auto"
-        >
-          <span class="text-gray-700 text-sm font-medium leading-tight"
-            >Team Size</span
-          >
-          <select
-            id="team-size"
-            class="rounded-md border px-3 py-2.5 outline-blue-700"
-          >
-            <!-- <option value="AMOUNT CHARGED BY TEST GORILLA IN INR">"SIZE OF TEAM"</option> -->
-
-            <option value="67500">1 - 15</option>
-            <option value="108000">16 - 30</option>
-            <option value="187500">31 - 50</option>
-            <option value="360000">51 - 100</option>
-            <option value="630000" selected>101 - 200</option>
-            <option value="1012500">201 - 300</option>
-            <option value="1572000">301 - 400</option>
-            <option value="2250000">401 - 500</option>
-            <option value="3150000">501 - 750</option>
-            <option value="3600000">751 - 1000</option>
-          </select>
+                <option value="67500">1 - 15</option>
+                <option value="108000">16 - 30</option>
+                <option value="187500">31 - 50</option>
+                <option value="360000">51 - 100</option>
+                <option value="630000" selected>101 - 200</option>
+                <option value="1012500">201 - 300</option>
+                <option value="1572000">301 - 400</option>
+                <option value="2250000">401 - 500</option>
+                <option value="3150000">501 - 750</option>
+                <option value="3600000">751 - 1000</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <!-- output showing cost for competitor and equip -->
         <div
-          class="flex flex-col gap-10 mt-16 mb-6 max-md:max-w-md max-md:mx-auto"
+          class="flex flex-col items-center xl:flex-row xl:justify-center gap-10 mt-16 mb-6 lg:mb-16 max-lg:max-w-md lg:max-xl:max-w-xl mx-auto"
         >
           <!-- competitor output -->
-          <div class="max-md:max-w-md">
+          <div
+            class="max-lg:max-w-md sm:w-full xl:w-1/3 xl:max-w-sm lg:p-8 xl:px-0"
+          >
             <!-- competitor image -->
 
             <div class="w-fit mx-auto mb-8">
@@ -571,7 +579,7 @@
           </div>
           <!-- equip output -->
           <div
-            class="border border-blue-900 rounded-md bg-blue-50 py-5 px-8 max-md:max-w-md"
+            class="border border-blue-900 rounded-md bg-blue-50 py-5 px-8 lg:p-8 xl:px-0 max-lg:max-w-md sm:w-full xl:w-1/3 xl:max-w-sm"
           >
             <!-- equip image -->
             <div class="w-fit mx-auto mb-8">
@@ -620,7 +628,7 @@
               id="output-equip"
               class="text-center text-gray-800 text-5xl font-extrabold mb-3"
             >
-              $8,282
+              $1,234
             </div>
             <div class="flex justify-center items-center">
               <a href="#" class="text-xl underline"> View Equip’s Pricing </a>
@@ -650,7 +658,9 @@
         </div>
 
         <!-- points to note -->
-        <div class="rounded-md bg-yellow-50 p-4 flex gap-3">
+        <div
+          class="rounded-md bg-yellow-50 p-4 flex gap-3 mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:w-4/5 xl:w-full lg:max-w-7xl"
+        >
           <div class="">
             <svg
               xmlns="http://www.w3.org/2000/svg"
