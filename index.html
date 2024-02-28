@@ -814,7 +814,7 @@
     let currency = "INR"; //for us use "USD"
     let locale = "en-IN"; // for us use "en-US"
 
-    //will to stop changing competitor names:
+    //will use this instanceID to stop changing competitor names:
     let instanceID;
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -838,22 +838,70 @@
         );
 
         let currentIndex = 0;
-        // changeCompName();
         instanceID = setInterval(changeCompName, 2000);
 
         function changeCompName() {
           movingCompNameEl.innerHTML = competitorData.result[currentIndex].name;
           currentIndex = (currentIndex + 1) % competitorData.result.length;
         }
+
+        candidatesInputEl = document.getElementById("num-candidates");
+
+        candidatesInputEl.addEventListener("keydown", handleNumCandidate);
+        candidatesInputEl.addEventListener("input", handleNumCandidate);
+        candidatesInputEl.addEventListener("paste", handleNumCandidate);
+
+        let competitorsEl = document.getElementById("competitors");
+
+        let equipIconEl = document.getElementById("equip-icon");
+
+        let competitorIconEl = document.getElementById("competitor-icon");
+
+        let competitorNameElArray =
+          document.querySelectorAll(".competitor-name");
+
+        let gradientBorderEl = document.getElementById("gradient-border-id");
+
+        let competitorPricingBodyEl = document.getElementById(
+          "competitor-pricing-body"
+        );
+
+        let competitorPricingUrlEL = document.getElementById(
+          "competitor-pricing-url"
+        );
+
+        let heroSectionEl = document.getElementById("hero-section");
+        competitorsEl.addEventListener("change", function () {
+          showOrHideTeamSize();
+          onSubmit();
+          showPricingBody(competitorPricingBodyEl, heroSectionEl);
+          removeGradient(gradientBorderEl);
+          getEquipPricingUrl();
+          getCompetitorPricingUrl(competitorPricingUrlEL);
+          candidatesInputEl.focus();
+          clearInterval(instanceID);
+          changeCompetitorName(competitorsEl, competitorNameElArray);
+          getEquipIcon(equipIconEl);
+          getCompetitorIcon(competitorIconEl);
+        });
+
+        let testGorillaTeamSizeDropdownEl =
+          document.getElementById("team-size");
+
+        testGorillaTeamSizeDropdownEl.addEventListener("change", onSubmit);
+        equipIconEl.addEventListener("error", function () {
+          equipIconEl.style.display = "none";
+        });
+
+        competitorIconEl.addEventListener("error", function () {
+          competitorIconEl.style.display = "none";
+        });
       } else if (retries <= 3) {
         retries++;
         setTimeout(init, 500);
       } else {
         alert("Some Error Loading The Data");
       }
-      candidatesInputEl.addEventListener("keydown", handleNumCandidate);
-      candidatesInputEl.addEventListener("input", handleNumCandidate);
-      candidatesInputEl.addEventListener("paste", handleNumCandidate);
     }
 
     function populateCompetitorDropdown() {
@@ -872,8 +920,6 @@
         dropdownEl.appendChild(option);
       });
     }
-
-    candidatesInputEl = document.getElementById("num-candidates");
 
     function handleNumCandidate(event) {
       let key = event.key;
@@ -897,9 +943,8 @@
       onSubmit();
     }
 
-    let competitorsEl = document.getElementById("competitors");
-
     function getCompetitor() {
+      let competitorsEl = document.getElementById("competitors");
       let selectedIndex = competitorsEl.selectedIndex;
       let selectedCompetitor = competitorsEl.options[selectedIndex];
       let competitorValue = selectedCompetitor.value;
@@ -969,8 +1014,6 @@
       return numCandInSub;
     }
 
-    let equipOutputEl = document.getElementById("output-equip");
-
     function formatCurrency(number) {
       return new Intl.NumberFormat(locale, {
         style: "currency",
@@ -981,6 +1024,7 @@
     }
 
     function calculateEquipCost() {
+      let equipOutputEl = document.getElementById("output-equip");
       let numOfCandidates = getNumCandidates();
       let equipPrice = getEquipPrice();
       if (countryCode === "IN") {
@@ -992,8 +1036,8 @@
       }
     }
 
-    let competitorOutputEl = document.getElementById("output-competitor");
     function calculateCompetitorCost() {
+      let competitorOutputEl = document.getElementById("output-competitor");
       let numOfCandidates = getNumCandidates();
       let pricingModel = getPricingModel();
       let competitorPrice = getCompetitorPrice(pricingModel);
@@ -1057,6 +1101,7 @@
     }
 
     function calculateTestGorillaCost() {
+      let competitorOutputEl = document.getElementById("output-competitor");
       let numOfCandidates = getNumCandidates();
       let priceForTeamSize = document.getElementById("team-size").value;
       if (countryCode === "IN") {
@@ -1067,37 +1112,7 @@
       }
     }
 
-    competitorsEl.addEventListener("change", function () {
-      showOrHideTeamSize();
-      onSubmit();
-      showPricingBody();
-      removeGradient();
-      getEquipPricingUrl();
-      getCompetitorPricingUrl();
-      autofocusInputField();
-      // candidatesInputEl.focus();
-      stopCompetitorNameChange();
-      changeCompetitorName();
-      getEquipIcon();
-      getCompetitorIcon();
-    });
-    function autofocusInputField() {
-      candidatesInputEl.focus();
-      // candidatesInputEl.setSelectionRange(candidatesInputEl.value.length);
-    }
-
-    let equipIconEl = document.getElementById("equip-icon");
-
-    let competitorIconEl = document.getElementById("competitor-icon");
-
-    equipIconEl.addEventListener("error", function () {
-      equipIconEl.style.display = "none";
-    });
-    competitorIconEl.addEventListener("error", function () {
-      competitorIconEl.style.display = "none";
-    });
-
-    function getEquipIcon() {
+    function getEquipIcon(equipIconEl) {
       let equipIconUrl;
       competitorData.result.forEach(function (comp) {
         if (comp.name === "Equip") {
@@ -1107,7 +1122,7 @@
       equipIconEl.setAttribute("src", equipIconUrl);
     }
 
-    function getCompetitorIcon() {
+    function getCompetitorIcon(competitorIconEl) {
       let competitorIconUrl;
       let currentCompetitor = getCompetitor();
       if (currentCompetitor === "testgorilla") {
@@ -1123,18 +1138,9 @@
       competitorIconEl.setAttribute("src", competitorIconUrl);
     }
 
-    let movingCompNameEl = document.getElementById("moving-Competitor-Name");
-    function stopCompetitorNameChange() {
-      clearInterval(instanceID);
-      // setTimeout(changeCompetitorName(), 200);
-    }
-
-    let equipPricingUrlEL = document.getElementById("equip-pricing-url");
-    let competitorPricingUrlEL = document.getElementById(
-      "competitor-pricing-url"
-    );
-
     function getEquipPricingUrl() {
+      let equipPricingUrlEL = document.getElementById("equip-pricing-url");
+
       let equipPricingUrl;
       competitorData.result.forEach(function (comp) {
         if (comp.name === "Equip") {
@@ -1144,7 +1150,7 @@
       equipPricingUrlEL.setAttribute("href", equipPricingUrl);
     }
 
-    function getCompetitorPricingUrl() {
+    function getCompetitorPricingUrl(competitorPricingUrlEL) {
       let competitorPricingUrl;
       let currentCompetitor = getCompetitor();
       if (currentCompetitor === "testgorilla") {
@@ -1160,9 +1166,7 @@
       competitorPricingUrlEL.setAttribute("href", competitorPricingUrl);
     }
 
-    let competitorNameElArray = document.querySelectorAll(".competitor-name");
-
-    function changeCompetitorName() {
+    function changeCompetitorName(competitorsEl, competitorNameElArray) {
       competitorNameElArray.forEach(function (competitorNameEl) {
         let selectedIndex = competitorsEl.selectedIndex;
         let selectedCompetitor = competitorsEl.options[selectedIndex];
@@ -1170,15 +1174,8 @@
         competitorNameEl.innerHTML = competitorName;
       });
     }
-    let heroSectionEl = document.getElementById("hero-section");
 
-    let competitorPricingBodyEl = document.getElementById(
-      "competitor-pricing-body"
-    );
-
-    let gradientBorderEl = document.getElementById("gradient-border-id");
-
-    function removeGradient() {
+    function removeGradient(gradientBorderEl) {
       gradientBorderEl.classList.remove("bg-gradient-to-r");
       gradientBorderEl.classList.add(
         "border-2",
@@ -1187,7 +1184,7 @@
       );
     }
 
-    function showPricingBody() {
+    function showPricingBody(competitorPricingBodyEl, heroSectionEl) {
       competitorPricingBodyEl.classList.remove("hidden");
       heroSectionEl.classList.remove("h-screen");
       heroSectionEl.classList.add("h-80");
@@ -1196,10 +1193,6 @@
     let testGorillaTeamSizeContainerEl = document.getElementById(
       "testgorilla-team-size-container"
     );
-
-    let testGorillaTeamSizeDropdownEl = document.getElementById("team-size");
-
-    testGorillaTeamSizeDropdownEl.addEventListener("change", onSubmit);
 
     function showOrHideTeamSize() {
       if (getCompetitor() === "testgorilla") {
