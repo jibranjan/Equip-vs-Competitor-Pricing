@@ -836,16 +836,14 @@
         let movingCompNameEl = document.getElementById(
           "moving-Competitor-Name"
         );
+
         let currentIndex = 0;
-        changeCompName();
+        // changeCompName();
         instanceID = setInterval(changeCompName, 2000);
 
         function changeCompName() {
-          setTimeout(function () {
-            movingCompNameEl.innerHTML =
-              competitorData.result[currentIndex].name;
-            currentIndex = (currentIndex + 1) % competitorData.result.length;
-          }, 2000);
+          movingCompNameEl.innerHTML = competitorData.result[currentIndex].name;
+          currentIndex = (currentIndex + 1) % competitorData.result.length;
         }
       } else if (retries <= 3) {
         retries++;
@@ -1076,12 +1074,17 @@
       removeGradient();
       getEquipPricingUrl();
       getCompetitorPricingUrl();
-      candidatesInputEl.focus();
+      autofocusInputField();
+      // candidatesInputEl.focus();
       stopCompetitorNameChange();
       changeCompetitorName();
       getEquipIcon();
       getCompetitorIcon();
     });
+    function autofocusInputField() {
+      candidatesInputEl.focus();
+      // candidatesInputEl.setSelectionRange(candidatesInputEl.value.length);
+    }
 
     let equipIconEl = document.getElementById("equip-icon");
 
