@@ -421,7 +421,7 @@
               <label
                 class="text-gray-700 text-sm font-medium leading-tight"
                 for="num-candidates"
-                >No. Of Candidates</label
+                >Number of Candidates</label
               >
               <input
                 id="num-candidates"
@@ -437,7 +437,7 @@
               class="hidden flex-col gap-2 max-lg:max-w-md max-lg:mx-auto"
             >
               <span class="text-gray-700 text-sm font-medium leading-tight"
-                >Team Size</span
+                >Team Size for TestGorilla</span
               >
               <select
                 id="team-size"
@@ -463,7 +463,7 @@
               class="flex-col gap-2 max-lg:max-w-md max-lg:mx-auto"
             >
               <span class="text-gray-700 text-sm font-medium leading-tight"
-                >Select number of candidates</span
+                >Candidates for Vervoe</span
               >
               <select
                 id="num-candidates-vervoe"
@@ -497,7 +497,7 @@
             </div>
             <div
               id="output-competitor"
-              class="text-center text-gray-800 text-5xl font-extrabold mb-3"
+              class="text-center px-8 text-gray-800 text-5xl font-extrabold mb-3 truncate"
             >
               Price will show here...
             </div>
@@ -549,7 +549,7 @@
             </div>
             <div
               id="output-equip"
-              class="text-center text-gray-800 text-5xl font-extrabold mb-3"
+              class="text-center text-gray-800 text-5xl font-extrabold mb-3 truncate"
             >
               Price will show here...
             </div>
@@ -1067,9 +1067,11 @@
       if (countryCode === "IN") {
         let price = numOfCandidates * equipPrice.IN;
         equipOutputEl.innerHTML = formatCurrency(price);
+        equipOutputEl.setAttribute("title", formatCurrency(price));
       } else if (countryCode === "US") {
         let price = numOfCandidates * equipPrice.US;
         equipOutputEl.innerHTML = formatCurrency(price);
+        equipOutputEl.setAttribute("title", formatCurrency(price));
       }
     }
 
@@ -1084,30 +1086,36 @@
         if (countryCode === "IN") {
           let price = numOfCandidates * competitorPrice.IN;
           competitorOutputEl.innerHTML = formatCurrency(price);
+          competitorOutputEl.setAttribute("title", formatCurrency(price));
         } else if (countryCode === "US") {
           let price = numOfCandidates * competitorPrice.US;
-          competitorOutputEl.innerHTML = formatCurrency(pricingModel);
+          competitorOutputEl.innerHTML = formatCurrency(price);
+          competitorOutputEl.setAttribute("title", formatCurrency(price));
         }
       } else if (pricingModel === "pure-subscription") {
         if (countryCode === "IN") {
           if (numOfCandidates <= numOfCandidatesIncludedInSub) {
             let price = competitorPrice.IN;
             competitorOutputEl.innerHTML = formatCurrency(price);
+            competitorOutputEl.setAttribute("title", formatCurrency(price));
           } else {
             let totalCost =
               competitorPrice.IN *
               Math.ceil(numOfCandidates / numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = formatCurrency(totalCost);
+            competitorOutputEl.setAttribute("title", formatCurrency(totalCost));
           }
         } else if (countryCode === "US") {
           if (numOfCandidates <= numOfCandidatesIncludedInSub) {
             let price = competitorPrice.US;
             competitorOutputEl.innerHTML = formatCurrency(price);
+            competitorOutputEl.setAttribute("title", formatCurrency(price));
           } else {
             let totalCost =
               competitorPrice.US *
               Math.ceil(numOfCandidates / numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = "$" + formatCurrency(totalCost);
+            competitorOutputEl.setAttribute("title", formatCurrency(totalCost));
           }
         }
       } else if (pricingModel === "subscription-with-usage") {
@@ -1115,23 +1123,27 @@
           if (numOfCandidates <= numOfCandidatesIncludedInSub) {
             let price = competitorPrice.annual.IN;
             competitorOutputEl.innerHTML = formatCurrency(price);
+            competitorOutputEl.setAttribute("title", formatCurrency(price));
           } else {
             let totalCost =
               competitorPrice.annual.IN +
               competitorPrice.perCandidate.IN *
                 (numOfCandidates - numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = formatCurrency(totalCost);
+            competitorOutputEl.setAttribute("title", formatCurrency(totalCost));
           }
         } else if (countryCode === "US") {
           if (numOfCandidates <= numOfCandidatesIncludedInSub) {
             let price = competitorPrice.annual.US;
             competitorOutputEl.innerHTML = formatCurrency(price);
+            competitorOutputEl.setAttribute("title", formatCurrency(price));
           } else {
             let totalCost =
               competitorPrice.annual.US +
               competitorPrice.perCandidate.US *
                 (numOfCandidates - numOfCandidatesIncludedInSub);
             competitorOutputEl.innerHTML = formatCurrency(totalCost);
+            competitorOutputEl.setAttribute("title", formatCurrency(totalCost));
           }
         }
       }
@@ -1142,9 +1154,14 @@
       let priceForTeamSize = document.getElementById("team-size").value;
       if (countryCode === "IN") {
         competitorOutputEl.innerHTML = formatCurrency(priceForTeamSize);
+        competitorOutputEl.setAttribute(
+          "title",
+          formatCurrency(priceForTeamSize)
+        );
       } else if (countryCode === "US") {
         let price = Math.floor(priceForTeamSize / 82);
         competitorOutputEl.innerHTML = formatCurrency(price);
+        competitorOutputEl.setAttribute("title", formatCurrency(price));
       }
     }
 
@@ -1155,9 +1172,14 @@
       ).value;
       if (countryCode === "IN") {
         competitorOutputEl.innerHTML = formatCurrency(priceForVervoe);
+        competitorOutputEl.setAttribute(
+          "title",
+          formatCurrency(priceForVervoe)
+        );
       } else if (countryCode === "US") {
         let price = Math.floor(priceForVervoe / 82);
         competitorOutputEl.innerHTML = formatCurrency(price);
+        competitorOutputEl.setAttribute("title", formatCurrency(price));
       }
     }
 
