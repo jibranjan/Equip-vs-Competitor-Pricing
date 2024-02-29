@@ -395,7 +395,7 @@
       <!-- hidden part: -->
       <div
         id="competitor-pricing-body"
-        class="hidden p-5 md:p-7 lg:p-9 max-w-7xl mx-auto"
+        class="p-5 md:p-7 lg:p-9 max-w-7xl mx-auto"
       >
         <div class="lg:flex justify-between gap-4">
           <div
@@ -455,6 +455,27 @@
                 <option value="2250000">401 - 500</option>
                 <option value="3150000">501 - 750</option>
                 <option value="3600000">751 - 1000</option>
+              </select>
+            </div>
+            <!-- No of candidates for vervoe -->
+            <div
+              id="vervoe-num-candidates-size-container"
+              class="flex-col gap-2 max-lg:max-w-md max-lg:mx-auto"
+            >
+              <span class="text-gray-700 text-sm font-medium leading-tight"
+                >Select number of candidates</span
+              >
+              <select
+                id="num-candidates-vervoe"
+                class="rounded-md border px-3 py-2.5 outline-blue-700"
+              >
+                <!-- <option value="AMOUNT CHARGED BY TEST GORILLA IN INR">"SIZE OF TEAM"</option> -->
+
+                <option value="24600" selected>10 Candidates</option>
+                <option value="36900">30 Candidates</option>
+                <option value="49200">50 Candidates</option>
+                <option value="90200">100 Candidates</option>
+                <option value="410000">500 Candidates</option>
               </select>
             </div>
           </div>
@@ -834,7 +855,7 @@
         if (competitorFromParams === "testgorilla") {
           document.getElementById("testgorilla-id").selected = true;
         }
-
+        showOrHideNumCandidatesVervoe();
         showOrHideTeamSize();
         onSubmit();
         getEquipPricingUrl();
@@ -882,6 +903,7 @@
         let heroSectionEl = document.getElementById("hero-section");
         competitorsEl.addEventListener("change", function () {
           showOrHideTeamSize();
+          showOrHideNumCandidatesVervoe();
           onSubmit();
           showPricingBody(competitorPricingBodyEl, heroSectionEl);
           removeGradient(gradientBorderEl);
@@ -898,6 +920,12 @@
           document.getElementById("team-size");
 
         testGorillaTeamSizeDropdownEl.addEventListener("change", onSubmit);
+
+        let vervoeNumCandidatesDropdownEL = document.getElementById(
+          "num-candidates-vervoe"
+        );
+        vervoeNumCandidatesDropdownEL.addEventListener("change", onSubmit);
+
         equipIconEl.addEventListener("error", function () {
           equipIconEl.style.display = "none";
         });
@@ -1111,13 +1139,25 @@
 
     function calculateTestGorillaCost() {
       let competitorOutputEl = document.getElementById("output-competitor");
-      let numOfCandidates = getNumCandidates();
       let priceForTeamSize = document.getElementById("team-size").value;
       if (countryCode === "IN") {
         competitorOutputEl.innerHTML = formatCurrency(priceForTeamSize);
       } else if (countryCode === "US") {
         let price = Math.floor(priceForTeamSize / 82);
-        competitorOutputEl.innerHTML = formatCurrency(priceForTeamSize);
+        competitorOutputEl.innerHTML = formatCurrency(price);
+      }
+    }
+
+    function calculateVervoeCost() {
+      let competitorOutputEl = document.getElementById("output-competitor");
+      let priceForVervoe = document.getElementById(
+        "num-candidates-vervoe"
+      ).value;
+      if (countryCode === "IN") {
+        competitorOutputEl.innerHTML = formatCurrency(priceForVervoe);
+      } else if (countryCode === "US") {
+        let price = Math.floor(priceForVervoe / 82);
+        competitorOutputEl.innerHTML = formatCurrency(price);
       }
     }
 
@@ -1221,9 +1261,25 @@
       }
     }
 
+    let vervoeNumCandidatesSizeContainer = document.getElementById(
+      "vervoe-num-candidates-size-container"
+    );
+
+    function showOrHideNumCandidatesVervoe() {
+      if (getCompetitor() === "vervoe") {
+        vervoeNumCandidatesSizeContainer.classList.remove("hidden");
+        vervoeNumCandidatesSizeContainer.classList.add("flex");
+      } else if (getCompetitor() !== "vervoe") {
+        vervoeNumCandidatesSizeContainer.classList.add("hidden");
+        vervoeNumCandidatesSizeContainer.classList.remove("flex");
+      }
+    }
+
     function onSubmit() {
       if (getCompetitor() === "testgorilla") {
         calculateTestGorillaCost();
+      } else if (getCompetitor() === "vervoe") {
+        calculateVervoeCost();
       } else {
         calculateCompetitorCost();
       }
